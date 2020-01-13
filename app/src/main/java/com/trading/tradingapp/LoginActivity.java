@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,8 +27,9 @@ public class LoginActivity extends AppCompatActivity {
     private Button signIn;
     private Boolean errorBool;
     private CustomersAPI customersAPI;
-    Retrofit retrofit;
+    private Retrofit retrofit;
     private String baseUrl , message;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         signIn = findViewById(R.id.signIn);
         baseUrl = "https://tradingapprestapi.000webhostapp.com/";
+        progressBar = findViewById(R.id.loginprogress);
 
         //Retrofit Initialisation
         retrofit = new Retrofit.Builder()
@@ -53,6 +56,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 final String username = user.getText().toString();
                 final String pass = password.getText().toString();
+                progressBar.setIndeterminate(true);
+                progressBar.setVisibility(View.VISIBLE);
                 Login(username , pass);
             }
         });
@@ -79,9 +84,11 @@ public class LoginActivity extends AppCompatActivity {
                 Log.i("error: ",errorBool+"\t"+message);
 
                 if(errorBool==false){
+                    progressBar.setIndeterminate(false);
                     startActivity(new Intent(LoginActivity.this,DashBoardActivity.class));
                     Toast.makeText(LoginActivity.this,"Welocome "+user, Toast.LENGTH_LONG).show();
                 }else{
+                    progressBar.setVisibility(View.INVISIBLE);
                     Toast.makeText(LoginActivity.this,""+message, Toast.LENGTH_LONG).show();
                 }
 
@@ -95,9 +102,5 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    //Cannot go back from this Activity
-    @Override
-    public void onBackPressed() {
 
-    }
 }
