@@ -7,8 +7,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
     private Retrofit retrofit;
     private String baseUrl , message;
     private ProgressBar progressBar;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor sharedEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +89,12 @@ public class LoginActivity extends AppCompatActivity {
                 Log.i("error: ",errorBool+"\t"+message);
 
                 if(errorBool==false){
+                    //Session is stored.
+                    StoreData();
                     progressBar.setIndeterminate(false);
                     startActivity(new Intent(LoginActivity.this,DashBoardActivity.class));
                     Toast.makeText(LoginActivity.this,"Welocome "+user, Toast.LENGTH_LONG).show();
+
                 }else{
                     progressBar.setVisibility(View.INVISIBLE);
                     Toast.makeText(LoginActivity.this,""+message, Toast.LENGTH_LONG).show();
@@ -100,6 +108,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    //Storing the boolean "TRUE" to the sharedPref file to store the session.
+    private void StoreData(){
+        sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefFileName),Context.MODE_PRIVATE);
+        sharedEditor = sharedPreferences.edit();
+        sharedEditor.putBoolean(getString(R.string.login_status),true);
+        sharedEditor.apply();
     }
 
 

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TradingApp</string>
+    <string name="sharedPrefFileName">sharedPref</string>
+    <string name="login_status">status</string>
 </resources>
