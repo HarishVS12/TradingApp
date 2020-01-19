@@ -1,6 +1,7 @@
 package com.trading.tradingapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,6 +24,8 @@ import android.widget.Toast;
 import com.trading.tradingapp.Retrofit.CustomersAPI;
 import com.trading.tradingapp.Retrofit.LoginJSON;
 
+import java.util.concurrent.TimeUnit;
+
 public class LoginActivity extends AppCompatActivity {
 
     //Declarations
@@ -32,9 +35,12 @@ public class LoginActivity extends AppCompatActivity {
     private CustomersAPI customersAPI;
     private Retrofit retrofit;
     private String baseUrl , message;
+    private  String userGotFromJSON;
     private ProgressBar progressBar;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor sharedEditor;
+
+    public String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +55,14 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.loginprogress);
 
         //Retrofit Initialisation
+        OkHttpClient ok = new OkHttpClient.Builder()
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60,TimeUnit.SECONDS)
+                .build();
+
         retrofit = new Retrofit.Builder()
                         .baseUrl(baseUrl)
+                        .client(ok)
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
         customersAPI = retrofit.create(CustomersAPI.class);
@@ -70,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //Method for Retrofit to call the REST API
-    private void Login(String username , String password){
+    private void Login(final String username , String password){
 
         Call<LoginJSON> log = customersAPI.loginPost(username,password);
 
@@ -85,15 +97,17 @@ public class LoginActivity extends AppCompatActivity {
                 LoginJSON lo = response.body();
                 errorBool = lo.getError();
                 message = lo.getMessage();
-                String user = lo.getUser();
+                id = lo.getID();
                 Log.i("error: ",errorBool+"\t"+message);
 
                 if(errorBool==false){
                     //Session is stored.
                     StoreData();
                     progressBar.setIndeterminate(false);
-                    startActivity(new Intent(LoginActivity.this,DashBoardActivity.class));
-                    Toast.makeText(LoginActivity.this,"Welocome "+user, Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(getApplicationContext(),DashBoardActivity.class);
+                    i.putExtra("id",id);
+                    startActivity(i);
+                    Toast.makeText(LoginActivity.this,"Welocome "+username, Toast.LENGTH_LONG).show();
 
                 }else{
                     progressBar.setVisibility(View.INVISIBLE);

@@ -6,7 +6,7 @@ public class LoginJSON {
 
         private Boolean error;
         private String message;
-        private String user;
+        private String id;
 
         public Boolean getError() {
             return error;
@@ -16,7 +16,7 @@ public class LoginJSON {
             return message;
         }
 
-        public String getUser() {
-            return user;
+        public String getID() {
+            return id;
         }
 }

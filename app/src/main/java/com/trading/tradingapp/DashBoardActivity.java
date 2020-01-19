@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -15,20 +16,34 @@ public class DashBoardActivity extends AppCompatActivity {
     //Declarations
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-    private Button signOutButton;
+    private Button signOutButton , profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dash_board);
 
+
        //Initialisations
+       profile = findViewById(R.id.profile);
        signOutButton = findViewById(R.id.signOutButt);
        signOutButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
                StoreData();
                startActivity(new Intent(DashBoardActivity.this,LoginActivity.class));
+           }
+       });
+
+        //profile activity
+       profile.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               Intent i = new Intent(DashBoardActivity.this,ProfileAcitvity.class);
+               String sasa = getIntent().getStringExtra("id");
+               Log.i("sasa",sasa);
+               i.putExtra("userid",sasa);
+               startActivity(i);
            }
        });
     }
